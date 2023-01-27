@@ -1,0 +1,23 @@
+{
+  "name": "tutor_project",
+  "version": "1.0.0",
+  "description": "pog",
+  "main": "server.js",
+  "scripts": {
+    "test": "nodemon server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zsim314/Tutor_Project.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/zsim314/Tutor_Project/issues"
+  },
+  "homepage": "https://github.com/zsim314/Tutor_Project#readme",
+  "dependencies": {
+    "express": "^4.18.2",
+    "morgan": "^1.10.0"
+  }
+}
