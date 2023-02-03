@@ -1,14 +1,16 @@
 const express = require('express');
 const morgan = require('morgan');
+const path = require('path');
 
-const PORT = process.env.PORT | 3000;
+const PORT = process.env.PORT | 5000;
+const MONGO_DB_CONNECTION_STRING = process.env.MONGO_DB_CONNECTION_STRING || require('./config.json').MONGO_DB_CONNECTION_STRING;
 
 let app = express(); // initialize express
-
 app.use(express.json()); // this allows express to parse the contents of request bodies
-app.use(morgan('dev')); // this logs all requests to the console
+app.use(morgan('dev')); // this logs all requests to the console (good for debugging)
 
-// TODO: express.static() on public directory
+// allow the www folder to be publicly accessed
+app.use(express.static(path.join(__dirname, 'www')));
 
 // cors settings, which allow the frontend to make requests to this backend. DO NOT MODIFY
 app.use((req, res, next) => {
@@ -19,9 +21,12 @@ app.use((req, res, next) => {
 });
 
 // register your routes here
-app.use('/', require('./api/routes/helloworld.routes'));
+app.use('/api', require('./api/routes/helloworld.routes'));
 
-// TODO. app.use() to direct to frontend application
+// serve the frontend application if no routes match
+app.use((req, res) => {
+    res.sendFile(path.join(__dirname, 'www', 'index.html'));
+});
 
-// listen on localhost:PORT (default localhost:3000)
+// listen for requests
 app.listen(PORT, () => { console.log(`Listening on localhost:${PORT}...`); });
