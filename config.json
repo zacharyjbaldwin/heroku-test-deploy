@@ -1,0 +1,5 @@
+{
+    "JWT_SECRET": "5344633B710DF2F40F8555F87CB5F0ED",
+    "MONGO_DB_CONNECTION_STRING": "mongodb+srv://root:80sJ3g1lMH3CXLTw@cluster0.ma9kltl.mongodb.net/tutoringapp?retryWrites=true&w=majority",
+    "SENDGRID_API_KEY": ""
+}
