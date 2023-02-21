@@ -1,4 +1,5 @@
 const express = require('express');
+const mongoose = require('mongoose');
 const morgan = require('morgan');
 const path = require('path');
 
@@ -21,6 +22,8 @@ app.use((req, res, next) => {
 });
 
 // register your routes here
+app.use('/api/users', require('./api/routes/users.routes'));
+app.use('/api/tutors', require('./api/routes/tutors.routes'));
 app.use('/api', require('./api/routes/helloworld.routes'));
 
 // serve the frontend application if no routes match
@@ -29,4 +32,12 @@ app.use((req, res) => {
 });
 
 // listen for requests
-app.listen(PORT, () => { console.log(`Listening on localhost:${PORT}...`); });
+mongoose.set('strictQuery', true);
+mongoose.connect(MONGO_DB_CONNECTION_STRING)
+    .then(() => {
+        app.listen(PORT, () => { console.log(`Listening on localhost:${PORT}...`); });
+    })
+    .catch(() => {
+        console.log('Failed to connect to MongoDB.');
+        process.exit(1);
+    });
