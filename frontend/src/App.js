@@ -2,7 +2,7 @@ import { useState, useCallback } from 'react';
 import { BrowserRouter as Router, Route, Redirect, Switch } from 'react-router-dom';
 
 import './App.css';
-import ToolBar from './Navigation/Toolbar';
+import ToolBar from './components/Navigation/Toolbar';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import { AuthContext } from './shared/context/auth-context';

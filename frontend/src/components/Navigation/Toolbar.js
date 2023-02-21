@@ -1,7 +1,7 @@
 import { useContext } from 'react';
 import { Link } from 'react-router-dom';
-import logo from '../images/logo-condensed.png';
-import { AuthContext } from '../shared/context/auth-context';
+import logo from '../../images/logo-condensed.png';
+import { AuthContext } from '../../shared/context/auth-context';
 
 const ToolBar = props => {
     const ctx = useContext(AuthContext);
