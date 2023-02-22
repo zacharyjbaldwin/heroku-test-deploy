@@ -4,17 +4,33 @@ module.exports.getTutors = (req, res) => {
     const pageSize = req.query.pageSize || 10;
     const pageNumber = req.query.pageNumber || 0;
     const filter = { isTutor: true };
+    const search = req.query.searchQuery ? req.query.searchQuery.trim().toLowerCase() : undefined;
 
-    User.find(filter, '-password',)
-        .skip(pageNumber * pageSize)
-        .limit(pageSize)
-        .then(tutors => {
-            User.count(filter, (error, tutorCount) => {
-                if (error) return res.status(500).json({ message: 'Failed to fetch tutors.' });
-                res.status(200).json({ tutorCount, pageCount: Math.ceil(tutorCount / pageSize), tutors });
-            });
-        })
-        .catch((error) => { console.log(error); res.status(500).json({ message: 'Failed to fetch tutors.' }); });
+    if (search) {
+        User.find(filter, '-password')
+            .then(users => {
+                let foundUsers = users.filter(user => {
+                    const nameMatch = `${user.firstName} ${user.lastName}`.toLowerCase().includes(search);
+                    const skillMatch = user.skills.includes(search.toUpperCase());
+                    return nameMatch || skillMatch;
+                });
+
+                res.status(200).json(foundUsers);
+            })
+            .catch((error) => { console.log(error); res.status(500).json({ message: 'Failed to fetch tutors.' }); });
+    } else {
+        User.find(filter, '-password')
+            .skip(pageNumber * pageSize)
+            .limit(pageSize)
+            .then(tutors => {
+                User.count(filter, (error, tutorCount) => {
+                    if (error) return res.status(500).json({ message: 'Failed to fetch tutors.' });
+                    res.status(200).json({ tutorCount, pageCount: Math.ceil(tutorCount / pageSize), tutors });
+                });
+            })
+            .catch((error) => { console.log(error); res.status(500).json({ message: 'Failed to fetch tutors.' }); });
+    }
+
 };
 
 module.exports.getTutorById = (req, res) => {
