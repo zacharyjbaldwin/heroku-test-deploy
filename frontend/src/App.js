@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Route, Redirect, Switch } from 'react-router-d
 
 import './App.css';
 import ToolBar from './components/Navigation/Toolbar';
+import Admin from './pages/Admin';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Profile from './pages/Profile';
@@ -30,6 +31,9 @@ function App() {
       <Switch>
         <Route path="/" exact>
           <Home />
+        </Route>
+        <Route path="/admin">
+          <Admin />
         </Route>
         <Route path="/login">
           <Login />
