@@ -224,3 +224,26 @@ Required parameters: tutorId
 Sample usage: `DELETE localhost:5000/api/tutors/63e40ce23491cbaee74e134b`
 
 Sample response: `204 No Content`
+
+
+## Favorites routes
+
+### `POST .../api/favorites`
+
+Description: add/removes the tutor from the user's favorite tutors list. If the tutor's id is not in the list, this route adds it. If the tutor's id is already in the list, it removes it.
+
+Note: You must be logged in to use this route because it fetches the user id (of the user making the request) from the authentication middleware.
+
+Required query string paramter: `tutorId` (see sample usage)
+
+Usage: `POST .../api/favorites`
+
+Sample usage: `POST localhost:5000/api/favorites?tutorId=63fa577a5e5f21d524196846`
+
+Sample response (json):
+
+```json
+{
+    "message": "Toggled favorite tutor."
+}
+```
