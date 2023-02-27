@@ -6,12 +6,12 @@ router.get('/', controller.getTutors);
 
 router.get('/:tutorId', controller.getTutorById);
 
+// do not use this route for tutor signup
 router.post('/', 
     [
         check('firstName').notEmpty(),
         check('lastName').notEmpty(),
-        check('email').normalizeEmail().isEmail(),
-        check('aboutMe').notEmpty(),
+        // check('aboutMe').notEmpty(),
         check('skills').notEmpty(),
         check('availability').notEmpty()
     ],
