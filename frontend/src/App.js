@@ -6,6 +6,7 @@ import Admin from './pages/Admin';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Profile from './pages/Profile';
+import TutorList from './pages/TutorList';
 import { AuthContext } from './shared/context/auth-context';
 import { useAuth } from './shared/hooks/auth-hook';
 
@@ -15,6 +16,7 @@ function App() {
 
   let routes;
   if (token) {
+    // show these routes if the user is logged in
     routes = (
       <Switch>
         <Route path="/" exact>
@@ -23,10 +25,14 @@ function App() {
         <Route path="/profile">
           <Profile />
         </Route>
+        <Route path="/tutors">
+          <TutorList />
+        </Route>
         <Redirect to="/" />
       </Switch>
     );
   } else {
+    // show these routes if the user is not logged in
     routes = (
       <Switch>
         <Route path="/" exact>
