@@ -15,6 +15,7 @@ const TutorList = props => {
     const [isLoading, setIsLoading] = useState(false);
     const [loadError, setLoadError] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
+    const [resetSearchQuery, setResetSearchQuery] = useState(false);
 
     const loadTutors = () => {
         axios.get(`${process.env.REACT_APP_API_URL}/tutors?pageNumber=${pageNumber}&pageSize=6&searchQuery=${searchQuery}`, { headers: { Authorization: `Bearer ${ctx.token}` } }) // TODO change this to token
@@ -54,7 +55,7 @@ const TutorList = props => {
     useEffect(() => {
         loadTutors();
         // eslint-disable-next-line
-    }, [pageNumber]);
+    }, [pageNumber, resetSearchQuery]);
 
     const onSubmitHander = (event) => {
         event.preventDefault();
@@ -62,10 +63,10 @@ const TutorList = props => {
         loadTutors();
     }
 
-    const onClearFilters = (event) => {
-        setSearchQuery('');
+    const onClearFilters = () => {
         setPageNumber(0);
-        loadTutors();
+        setSearchQuery('');
+        setResetSearchQuery((prevState) => { return !prevState });
     };
 
     // TODO get date and availablility dropdowns to work
