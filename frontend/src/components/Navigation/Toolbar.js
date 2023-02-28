@@ -29,6 +29,7 @@ const ToolBar = props => {
                             </a>
                             <ul className="dropdown-menu dropdown-menu-start dropdown-menu-md-start">
                                 {!ctx.isLoggedIn && <li><Link to="/login" className="dropdown-item">Login</Link></li>}
+                                {!ctx.isLoggedIn && <li><Link to="/signup" className="dropdown-item">Sign Up</Link></li>}
                                 {ctx.isLoggedIn && <li><Link to="/profile" className="dropdown-item">Profile</Link></li>}
                                 {ctx.isLoggedIn && <li><span className="dropdown-item" style={{ cursor: 'pointer' }} onClick={ctx.logout}>Sign out</span></li>}
                             </ul>

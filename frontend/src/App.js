@@ -4,9 +4,12 @@ import './App.css';
 import ToolBar from './components/Navigation/Toolbar';
 import Home from './pages/Home';
 import Login from './pages/Login';
+import SignUp from './pages/Signup';
 import Profile from './pages/Profile';
 import { AuthContext } from './shared/context/auth-context';
 import { useAuth } from './shared/hooks/auth-hook';
+
+
 
 function App() {
 
@@ -25,7 +28,7 @@ function App() {
         <Redirect to="/" />
       </Switch>
     );
-  } else {
+  }else {
     routes = (
       <Switch>
         <Route path="/" exact>
@@ -34,7 +37,12 @@ function App() {
         <Route path="/login">
           <Login />
         </Route>
-        <Redirect to="/login" />
+        
+        <Route path="/signup">
+          <SignUp />
+        </Route>
+        <Redirect to="/signup" />
+        
       </Switch>
     );
   }
