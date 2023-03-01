@@ -5,6 +5,7 @@ import ToolBar from './components/Navigation/Toolbar';
 import Admin from './pages/Admin';
 import Home from './pages/Home';
 import Login from './pages/Login';
+import TutorSignup from './pages/TutorSignup';
 import Profile from './pages/Profile';
 import TutorList from './pages/TutorList';
 import { AuthContext } from './shared/context/auth-context';
@@ -44,7 +45,12 @@ function App() {
         <Route path="/login">
           <Login />
         </Route>
-        <Redirect to="/login" />
+        
+
+        <Route path="/tutorsignup">
+          <TutorSignup />
+        </Route>
+        <Redirect to="/tutorsignup" />
       </Switch>
     );
   }
