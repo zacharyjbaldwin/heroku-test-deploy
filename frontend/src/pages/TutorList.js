@@ -16,9 +16,12 @@ const TutorList = props => {
     const [loadError, setLoadError] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
     const [resetSearchQuery, setResetSearchQuery] = useState(false);
+    const [availableMin, setAvailableMin] = useState(0);
+    const [availableMax, setAvailableMax] = useState(24);
+    const [date, setDate] = useState();
 
     const loadTutors = () => {
-        axios.get(`${process.env.REACT_APP_API_URL}/tutors?pageNumber=${pageNumber}&pageSize=6&searchQuery=${searchQuery}`, { headers: { Authorization: `Bearer ${ctx.token}` } }) // TODO change this to token
+        axios.get(`${process.env.REACT_APP_API_URL}/tutors?pageNumber=${pageNumber}&pageSize=6&searchQuery=${searchQuery}&availableMin=${availableMin}&availableMax=${availableMax}&date=${date === undefined ? undefined : date}`,{ headers: { Authorization: `Bearer ${ctx.token}` } }) // TODO change this to token
             .then(response => {
                 setTutors(response.data.tutors);
                 setPageCount(response.data.pageCount);
@@ -43,7 +46,7 @@ const TutorList = props => {
     const generateOptions = (min, max) => {
         let options = [];
         for (let i = min; i <= max; i++) {
-            options.push(<option value={i} key={i}>{(i % 12 === 0 ? '12' : i % 12) + (i > 11 ? ':00 PM' : ':00 AM')}</option>)
+            options.push(<option value={i} key={i}>{(i % 12 === 0 ? '12' : i % 12) + (i > 11 && i < 24 ? ':00 PM' : ':00 AM')}</option>)
         }
         return options;
     };
@@ -89,19 +92,23 @@ const TutorList = props => {
                         </div>
                         <div className="form-group mb-3">
                             <label className="form-label">Date</label>
-                            <input type="date" className="form-control" id="date-picker" />
+                            <input type="date" className="form-control" id="date-picker" onChange={e => {
+                                let filterDate = new Date(e.target.value);
+                                filterDate.setHours(filterDate.getHours() + 6);
+                                setDate(filterDate);
+                            }} />
                         </div>
                         <div className="form-group mb-3">
                             <div className="row">
                                 <div className="col-md-6">
-                                    <label className="form-label">Available from</label>
-                                    <select className="form-select">
+                                    <label className="form-label">Available min</label>
+                                    <select className="form-select" onChange={e => setAvailableMin(e.target.value)} defaultValue={0}>
                                         {generateOptions(0, 23)}
                                     </select>
                                 </div>
                                 <div className="col-md-6">
-                                    <label className="form-label">Available to</label>
-                                    <select className="form-select">
+                                    <label className="form-label">Available max</label>
+                                    <select className="form-select" onChange={e => setAvailableMax(e.target.value)} defaultValue={24}>
                                         {generateOptions(1, 24)}
                                     </select>
                                 </div>

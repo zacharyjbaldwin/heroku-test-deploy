@@ -1,11 +1,55 @@
 const { validationResult } = require('express-validator');
 const User = require('../models/user.model');
 
+const WEEKDAY = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+
 module.exports.getTutors = (req, res) => {
     const pageSize = req.query.pageSize || 8;
     const pageNumber = req.query.pageNumber || 0;
     const filter = { isTutor: true };
     const search = req.query.searchQuery ? req.query.searchQuery.trim().toLowerCase() : undefined;
+    const availableMin = req.query.availableMin || 0;
+    const availableMax = req.query.availableMax || 24;
+    const date = req.query.date || null;
+
+    User.find(filter)
+        .then(tutors => {
+            // if there is a search query
+            if (search) {
+                tutors = tutors.filter(tutor => {
+                    const nameMatch = `${tutor.firstName} ${tutor.lastName}`.toLowerCase().includes(search);
+                    const skillMatch = tutor.skills.includes(search.toUpperCase());
+                    return nameMatch || skillMatch;
+                });
+            }
+
+            if (date > -1) {
+                // convert to date
+                // add 6 hours
+                // see if length of that day's availabliliy array is greater than 0
+                // if so, return true!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! 
+                const dow = WEEKDAY[date];
+                console.log(dow);
+                tutors = tutors.filter(tutor => {
+                    return tutor.availability[dow].length > 0;
+                })
+            }
+
+            // if (availableMin && availableMax) {
+            //     tutor
+            // }
+
+            const skip = pageNumber * pageSize;
+
+            res.status(200).json({
+                tutorCount: tutors.length,
+                pageCount: Math.ceil(tutors.length / pageSize),
+                pageNumber,
+                tutors: tutors.slice(skip, skip + pageSize)
+            })
+        })
+        .catch((error) => { console.log(error); res.status(500).json({ message: 'Failed to fetch tutors.' }); });
+    return;
 
     if (search) {
         User.find(filter, '-password')

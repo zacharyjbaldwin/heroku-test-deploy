@@ -11,8 +11,6 @@ import TutorList from './pages/TutorList';
 import { AuthContext } from './shared/context/auth-context';
 import { useAuth } from './shared/hooks/auth-hook';
 
-
-
 function App() {
 
   const { token, login, logout, userId } = useAuth();
@@ -47,7 +45,9 @@ function App() {
         <Route path="/login">
           <Login />
         </Route>
-        
+        <Route path="/tutors">
+          <TutorList />
+        </Route>
         <Route path="/signup">
           <SignUp />
         </Route>
