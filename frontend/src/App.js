@@ -6,10 +6,13 @@ import Admin from './pages/Admin';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import TutorSignup from './pages/TutorSignup';
+import SignUp from './pages/Signup';
 import Profile from './pages/Profile';
 import TutorList from './pages/TutorList';
 import { AuthContext } from './shared/context/auth-context';
 import { useAuth } from './shared/hooks/auth-hook';
+
+
 
 function App() {
 
@@ -50,7 +53,12 @@ function App() {
         <Route path="/tutorsignup">
           <TutorSignup />
         </Route>
-        <Redirect to="/tutorsignup" />
+        
+        <Route path="/signup">
+          <SignUp />
+        </Route>
+        <Redirect to="/signup" />
+        
       </Switch>
     );
   }
