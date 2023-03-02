@@ -55,6 +55,11 @@ function App() {
           <TutorSignup />
         </Route>
         
+
+        <Route path="/tutorsignup">
+          <TutorSignup />
+        </Route>
+        
         <Route path="/signup">
           <SignUp />
         </Route>
