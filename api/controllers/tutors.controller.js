@@ -10,34 +10,43 @@ module.exports.getTutors = (req, res) => {
     const search = req.query.searchQuery ? req.query.searchQuery.trim().toLowerCase() : undefined;
     const availableMin = req.query.availableMin || 0;
     const availableMax = req.query.availableMax || 24;
-    const date = req.query.date || null;
+    const date = req.query.date === 'undefined' ? undefined : req.query.date;
 
     User.find(filter)
         .then(tutors => {
-            // if there is a search query
             if (search) {
                 tutors = tutors.filter(tutor => {
-                    const nameMatch = `${tutor.firstName} ${tutor.lastName}`.toLowerCase().includes(search);
-                    const skillMatch = tutor.skills.includes(search.toUpperCase());
+                    const nameMatch = `${tutor.firstName} ${tutor.lastName}`.toLowerCase().includes(search) || `${tutor.firstName}${tutor.lastName}`.toLowerCase().includes(search);
+                    let skillMatch = false;
+                    tutor.skills.forEach(skill => {
+                        if (skill.includes(search.toUpperCase() || skill.split(' ').join('').includes(search.toUpperCase()))) {
+                            skillMatch = true;
+                        }
+                    });
+
                     return nameMatch || skillMatch;
                 });
             }
 
-            if (date > -1) {
-                // convert to date
-                // add 6 hours
-                // see if length of that day's availabliliy array is greater than 0
-                // if so, return true!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! 
-                const dow = WEEKDAY[date];
-                console.log(dow);
+            if (date) {
+                const filterDate = new Date(date);
+                const dow = WEEKDAY[filterDate.getDay()];
                 tutors = tutors.filter(tutor => {
                     return tutor.availability[dow].length > 0;
-                })
+                });
             }
 
-            // if (availableMin && availableMax) {
-            //     tutor
-            // }
+            if (availableMin > -1 && availableMax > -1) {
+                tutors = tutors.filter(tutor => {
+                    let found = false;
+                    for (let i = 0; i < 7; i++) {
+                        for (let availability of tutor.availability[WEEKDAY[i]]) {
+                            if (availability.from >= availableMin && availability.to <= availableMax) found = true;
+                        }
+                    }
+                    return found;
+                });
+            }
 
             const skip = pageNumber * pageSize;
 
@@ -49,38 +58,6 @@ module.exports.getTutors = (req, res) => {
             })
         })
         .catch((error) => { console.log(error); res.status(500).json({ message: 'Failed to fetch tutors.' }); });
-    return;
-
-    if (search) {
-        User.find(filter, '-password')
-            .then(users => {
-                let foundUsers = users.filter(user => {
-                    const nameMatch = `${user.firstName} ${user.lastName}`.toLowerCase().includes(search);
-                    const skillMatch = user.skills.includes(search.toUpperCase());
-                    return nameMatch || skillMatch;
-                });
-
-                res.status(200).json({
-                    tutorCount: foundUsers.length,
-                    pageCount: Math.ceil(foundUsers.length / pageSize),
-                    pageNumber,
-                    tutors: foundUsers.slice(pageNumber * pageSize, (pageNumber * pageSize) + pageSize)
-                });
-            })
-            .catch((error) => { console.log(error); res.status(500).json({ message: 'Failed to fetch tutors.' }); });
-    } else {
-        User.find(filter, '-password')
-            .skip(pageNumber * pageSize)
-            .limit(pageSize)
-            .then(tutors => {
-                User.count(filter, (error, tutorCount) => {
-                    if (error) return res.status(500).json({ message: 'Failed to fetch tutors.' });
-                    res.status(200).json({ tutorCount, pageCount: Math.ceil(tutorCount / pageSize), pageNumber, tutors });
-                });
-            })
-            .catch((error) => { console.log(error); res.status(500).json({ message: 'Failed to fetch tutors.' }); });
-    }
-
 };
 
 module.exports.getTutorById = (req, res) => {
