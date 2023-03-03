@@ -1,10 +1,11 @@
 const router = require('express').Router();
 const controller = require('../controllers/tutors.controller');
 const { check } = require('express-validator');
+const authCheck = require('../middleware/check-auth');
 
-router.get('/', controller.getTutors);
+router.get('/', authCheck, controller.getTutors);
 
-router.get('/:tutorId', controller.getTutorById);
+router.get('/:tutorId', authCheck, controller.getTutorById);
 
 // do not use this route for tutor signup
 router.post('/', 
@@ -17,8 +18,8 @@ router.post('/',
     ],
     controller.createTutor);
 
-router.patch('/:tutorId', controller.updateTutor);
+router.patch('/:tutorId', authCheck, controller.updateTutor);
 
-router.delete('/:tutorId', controller.deleteTutor);
+router.delete('/:tutorId', authCheck, controller.deleteTutor);
 
 module.exports = router;

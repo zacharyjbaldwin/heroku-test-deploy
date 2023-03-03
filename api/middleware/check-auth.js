@@ -11,13 +11,9 @@ module.exports = (req, res, next) => {
 
     // TODO decide what will be included in the payload of the token
 
-    // req.userData = {
-    //   email: payload.email,
-    //   userId: payload.userId,
-    //   isAdmin: payload.isAdmin,
-    //   firstname: payload.firstname,
-    //   lastname: payload.lastname
-    // }
+    req.userData = {
+      userId: payload.userId
+    }
 
     next();
   } catch (error) {
