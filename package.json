@@ -36,10 +36,12 @@
     "morgan": "^1.10.0",
     "passport": "^0.6.0",
     "passport-jwt": "^4.0.1",
+    "react": "^18.2.0",
     "validator": "^13.9.0"
   },
   "devDependencies": {
     "copyfiles": "^2.4.1",
     "rimraf": "^4.1.2"
-  }
+  },
+  "keywords": []
 }
