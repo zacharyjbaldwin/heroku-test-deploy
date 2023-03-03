@@ -1,4 +1,6 @@
-import { useReducer } from "react";
+import axios from "axios";
+import { useContext, useReducer, useState } from "react";
+import { AuthContext } from '../shared/context/auth-context';
 
 const EMAIL_REGEX = /^[A-Za-z0-9\.]+@[A-Za-z0-9\.]+$/; // eslint-disable-line
 
@@ -40,6 +42,9 @@ const formReducer = (state, action) => {
 
 const Login = props => {
 
+    const ctx = useContext(AuthContext);
+
+    const [errorMessage, setErrorMessage] = useState('');
     const [formState, dispatch] = useReducer(formReducer, {
         email: {
             value: '',
@@ -56,11 +61,21 @@ const Login = props => {
 
     const onSubmit = e => {
         e.preventDefault();
-        alert('501 not implemented')
+        axios.post(`${process.env.REACT_APP_API_URL}/login`, { email: formState.email.value, password: formState.password.value })
+            .then(response => {
+                console.log(response.data);
+                setErrorMessage('');
+                const { userId, token, email, firstName, lastName, isAdmin, isTutor } = response.data; 
+                ctx.login(userId, token.split(' ')[1], email, firstName, lastName, isAdmin, isTutor);
+            })
+            .catch(() => {
+                setErrorMessage('Failed to log in. Your credentials are invaild.');
+            });
     }
 
     return (
         <div className="col-md-4 offset-md-4">
+            {errorMessage && <div className="alert alert-danger">{errorMessage}</div>}
             <div className="card">
                 <div className="card-body">
                     <h5 className="card-title">Login</h5>
@@ -72,7 +87,7 @@ const Login = props => {
                                 className={`form-control ${!formState.email.isValid && formState.email.touched ? 'is-invalid' : ''}`}
                                 onChange={e => { dispatch({ type: 'EMAIL_INPUT', value: e.target.value }) }}
                                 onBlur={() => { dispatch({ type: 'EMAIL_BLUR' }) }}
-                                ></input>
+                            ></input>
                             {!formState.email.isValid && formState.email.touched && <small className="invalid-feedback form-text">Email address is required.</small>}
                         </div>
                         <div className="form-group mb-3">
@@ -82,7 +97,7 @@ const Login = props => {
                                 className={`form-control ${!formState.password.isValid && formState.password.touched ? 'is-invalid' : ''}`}
                                 onChange={e => { dispatch({ type: 'PASSWORD_INPUT', value: e.target.value }) }}
                                 onBlur={() => { dispatch({ type: 'PASSWORD_BLUR' }) }}
-                                ></input>
+                            ></input>
                             {!formState.password.isValid && formState.password.touched && <small className="invalid-feedback form-text">Password must be at least 6 characters in length.</small>}
                         </div>
                         <button disabled={!formState.isValid} type="submit" className="btn btn-success col-12">Login</button>

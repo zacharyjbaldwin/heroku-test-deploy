@@ -74,9 +74,17 @@ module.exports.login = (req,res) =>  {
               expiresIn: 31556926 // 1 year in seconds
             },
             (err, token) => {
+              const { firstName, lastName, email, isTutor, isAdmin, _id: userId } = user;
               res.json({
                 success: true,
-                token: "Bearer " + token
+                token: "Bearer " + token,
+                expiresIn: 31556926,
+                firstName,
+                lastName,
+                email,
+                isTutor,
+                isAdmin,
+                userId
               });
             }
           );

@@ -22,6 +22,15 @@ const ToolBar = props => {
                 </button>
                 <div className="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul className="navbar-nav ms-auto mb-2 mb-lg-0">
+
+                        {ctx.isLoggedIn && ctx.isAdmin && <li className='nav-link text-white cursor-pointer'>
+                            <Link to="/admin" style={{ color: 'white', textDecoration: 'none', fontSize: '20px' }}><i className="fa-solid fa-lock"></i> Admin</Link>
+                        </li>}
+
+                        {ctx.isLoggedIn && <li className='nav-link text-white cursor-pointer'>
+                            <Link to="/tutors" style={{ color: 'white', textDecoration: 'none', fontSize: '20px' }}><i className="fa-solid fa-graduation-cap"></i> Tutors</Link>
+                        </li>}
+
                         <li className="nav-item dropdown">
                             <a className="nav-link dropdown-toggle text-white" style={{ fontSize: '20px' }} href="/" role="button"
                                 data-bs-toggle="dropdown" aria-expanded="false">
@@ -30,8 +39,8 @@ const ToolBar = props => {
                             <ul className="dropdown-menu dropdown-menu-start dropdown-menu-md-start">
                                 {!ctx.isLoggedIn && <li><Link to="/login" className="dropdown-item">Login</Link></li>}
                                 {!ctx.isLoggedIn && <li><Link to="/signup" className="dropdown-item">Sign Up</Link></li>}
-                                {!ctx.isLoggedIn && <li><Link to="/tutorsignup" className="dropdown-item">Tutor Signup</Link></li>}
-                                {ctx.isLoggedIn && <li><Link to="/profile" className="dropdown-item">Profile</Link></li>}
+                                {ctx.isLoggedIn && !ctx.isTutor && <li><Link to="/profile" className="dropdown-item">Profile</Link></li>}
+                                {ctx.isLoggedIn && <li><Link to="/tutorsignup" className="dropdown-item">Tutor Signup</Link></li>}
                                 {ctx.isLoggedIn && <li><span className="dropdown-item" style={{ cursor: 'pointer' }} onClick={ctx.logout}>Sign out</span></li>}
                             </ul>
                         </li>

@@ -14,15 +14,18 @@ import { useAuth } from './shared/hooks/auth-hook';
 
 function App() {
 
-  const { token, login, logout, userId } = useAuth();
+  const { token, login, logout, userId, email, firstName, lastName, isAdmin, isTutor } = useAuth();
 
   let routes;
-  if (token) {
+  if (userId) {
     // show these routes if the user is logged in
     routes = (
       <Switch>
         <Route path="/" exact>
           <Home />
+        </Route>
+        <Route path="/admin">
+          <Admin />
         </Route>
         <Route path="/profile">
           <Profile />
@@ -30,7 +33,10 @@ function App() {
         <Route path="/tutors">
           <TutorList />
         </Route>
-        <Redirect to="/" />
+        <Route path="/tutorsignup">
+          <TutorSignup />
+        </Route>
+        <Redirect to="/profile" />
       </Switch>
     );
   } else {
@@ -40,31 +46,13 @@ function App() {
         <Route path="/" exact>
           <Home />
         </Route>
-        <Route path="/admin">
-          <Admin />
-        </Route>
         <Route path="/login">
           <Login />
         </Route>
-        <Route path="/tutors">
-          <TutorList />
-        </Route>
-        
-
-        <Route path="/tutorsignup">
-          <TutorSignup />
-        </Route>
-        
-
-        <Route path="/tutorsignup">
-          <TutorSignup />
-        </Route>
-        
         <Route path="/signup">
           <SignUp />
         </Route>
-        <Redirect to="/signup" />
-        
+        <Redirect to="/login" />
       </Switch>
     );
   }
@@ -72,8 +60,13 @@ function App() {
   return (
     <AuthContext.Provider value={{
       isLoggedIn: !!token,
-      token: token,
-      userId: userId,
+      token,
+      userId,
+      email,
+      firstName,
+      lastName,
+      isAdmin,
+      isTutor,
       login: login,
       logout: logout
     }}>
