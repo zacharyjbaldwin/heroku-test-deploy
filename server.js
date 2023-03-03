@@ -2,6 +2,8 @@ const express = require('express');
 const mongoose = require('mongoose');
 const morgan = require('morgan');
 const path = require('path');
+const passport = require("passport");
+
 
 const PORT = process.env.PORT | 5000;
 const MONGO_DB_CONNECTION_STRING = process.env.MONGO_DB_CONNECTION_STRING || require('./config.json').MONGO_DB_CONNECTION_STRING;
@@ -9,6 +11,11 @@ const MONGO_DB_CONNECTION_STRING = process.env.MONGO_DB_CONNECTION_STRING || req
 let app = express(); // initialize express
 app.use(express.json()); // this allows express to parse the contents of request bodies
 app.use(morgan('dev')); // this logs all requests to the console (good for debugging)
+app.use(express.urlencoded({
+    extended: false
+})
+);
+app.use(express.json());
 
 // allow the www folder to be publicly accessed
 app.use(express.static(path.join(__dirname, 'www')));
@@ -32,6 +39,11 @@ app.use((req, res) => {
     res.sendFile(path.join(__dirname, 'www', 'index.html'));
 });
 
+// Passport middleware
+app.use(passport.initialize());
+// Passport config
+require("./keys/passport.js")(passport);
+
 // listen for requests
 mongoose.set('strictQuery', true);
 mongoose.connect(MONGO_DB_CONNECTION_STRING)
@@ -42,3 +54,4 @@ mongoose.connect(MONGO_DB_CONNECTION_STRING)
         console.log('Failed to connect to MongoDB.');
         process.exit(1);
     });
+
