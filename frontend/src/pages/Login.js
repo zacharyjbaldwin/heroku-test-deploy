@@ -63,7 +63,6 @@ const Login = props => {
         e.preventDefault();
         axios.post(`${process.env.REACT_APP_API_URL}/login`, { email: formState.email.value, password: formState.password.value })
             .then(response => {
-                console.log(response.data);
                 setErrorMessage('');
                 const { userId, token, email, firstName, lastName, isAdmin, isTutor } = response.data; 
                 ctx.login(userId, token.split(' ')[1], email, firstName, lastName, isAdmin, isTutor);

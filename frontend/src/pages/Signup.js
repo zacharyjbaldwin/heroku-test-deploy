@@ -1,4 +1,6 @@
-import { useReducer } from "react";
+import axios from "axios";
+import { useReducer, useState } from "react";
+import { useHistory } from 'react-router-dom';
 
 const EMAIL_REGEX = /^[A-Za-z0-9\.]+@[A-Za-z0-9\.]+$/; // eslint-disable-line
 const FULLNAME =  /^[a-zA-Z]{2,40}( [a-zA-Z]{2,40})+$/;
@@ -55,6 +57,9 @@ const formReducer = (state, action) => {
 };
 
 const SignUp = props => {
+    const [errorMessage, setErrorMessage] = useState('');
+    const history = useHistory();
+
     // initial states
     const [formState, dispatch] = useReducer(formReducer, {
         email: {
@@ -67,7 +72,7 @@ const SignUp = props => {
             isValid: false,
             touched: false
         },
-          fullname: {
+        fullname: {
           value: '',
           isValid: false,
           touched: false
@@ -77,11 +82,29 @@ const SignUp = props => {
 
     const onSubmit = e => {
         e.preventDefault();
-        alert('501 not implemented')
+        const reqBody = {
+            email: formState.email.value,
+            password: formState.password.value,
+            password2: formState.password.value,
+            firstName: formState.fullname.value.split(' ')[0],
+            lastName: formState.fullname.value.split(' ')[1],
+        }; 
+        axios.post(`${process.env.REACT_APP_API_URL}/register`, reqBody)
+            .then(() => {
+                history.push('/login');
+            })
+            .catch(error => {
+                if (error.response.data.email === 'Email already exists') {
+                    setErrorMessage('That email is already in use.');
+                } else {
+                    setErrorMessage('An unknown error occurred.');
+                }
+            });
     }
 
     return (
         <div className="col-md-4 offset-md-4">
+            {errorMessage && <div className="alert alert-danger">{errorMessage}</div>}
             <div className="card">
                 <div className="card-body">
                     <h5 className="card-title">Registration</h5>
@@ -120,7 +143,7 @@ const SignUp = props => {
                             {!formState.password.isValid && formState.password.touched && <small className="invalid-feedback form-text">Password must be at least 6 characters in length.</small>}
                         </div>
                         
-                        <button disabled={!formState.isValid} type="submit" className="btn btn-success col-12">Login</button>
+                        <button disabled={!formState.isValid} type="submit" className="btn btn-success col-12">Register</button>
                     </form>
                 </div>
             </div>
