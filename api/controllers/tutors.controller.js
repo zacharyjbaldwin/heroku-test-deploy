@@ -4,8 +4,8 @@ const User = require('../models/user.model');
 const WEEKDAY = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
 
 module.exports.getTutors = (req, res) => {
-    const pageSize = req.query.pageSize || 8;
-    const pageNumber = req.query.pageNumber || 0;
+    const pageSize = +req.query.pageSize || 8;
+    const pageNumber = +req.query.pageNumber || 0;
     const filter = { isTutor: true };
     const search = req.query.searchQuery ? req.query.searchQuery.trim().toLowerCase() : undefined;
     const availableMin = req.query.availableMin || 0;

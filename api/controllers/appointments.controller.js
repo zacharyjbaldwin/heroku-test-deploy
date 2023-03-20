@@ -68,6 +68,48 @@ module.exports.getAppointmentById = (req, res) => {
         })
         .catch(() => { res.status(500).json({ message: 'Failed to fetch appointment.' }); });
 };
+
+module.exports.createAppointment = (req, res) => {
+    if (!validationResult(req).isEmpty()) {
+        return res.status(400).json({ message: 'One or more required parameters is missing or malformed.' });
+    }
+
+    const { userId: studentId } = req.userData;
+    const { tutorId, date, from, to } = req.body;
+
+    if (from > to) {
+        return res.status(400).json({ message: 'One or more required parameters is missing or malformed.' });
+    }
+
+    Appointment.findOne({ tutorId, date, from, to })
+        .then(appointment => {
+            if (appointment) {
+                return res.status(409).json({ message: 'There is already an appointment scheduled for that day and time slot.', code: 'SCHEDULE_CONFLICT' });
+            }
+
+            const appt = new Appointment({
+                studentId,
+                tutorId,
+                date: (new Date(date)).toISOString(),
+                from,
+                to,
+                // meetingUrl: 'https://www.example.com' // will come back to this later
+            });
+
+            appt.save()
+                .then(appointment => {
+                    res.status(201).json(appointment);
+                })
+                .catch(error => {
+                    console.log(error);
+                    res.status(500).json({ message: 'Failed to create appointment.' });
+                });
+        })
+        .catch(error => {
+            console.log(error);
+            res.status(500).json({ message: 'Failed to create appointment.' });
+        });
+};
 /*
 // do not use this route for signing up tutors
 module.exports.createTutor = (req, res) => {

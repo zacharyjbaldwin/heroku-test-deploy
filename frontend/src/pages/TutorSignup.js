@@ -1,78 +1,32 @@
-import { useReducer } from "react";
+import axios from "axios";
+import { useContext, useReducer, useState } from "react";
+import { AuthContext } from "../shared/context/auth-context";
 
-const EMAIL_REGEX = /^[A-Za-z0-9\.]+@[A-Za-z0-9\.]+$/; // eslint-disable-line
+const SUBJECTS_REGEX = /^([A-Z]{2,4}\s[0-9]{4})(,\s?[A-Z]{2,4}\s[0-9]{4})*,?$/;
+const AVAILABILITY_REGEX = /^([1-2]?[0-9][A|P]M-[1-2]?[0-9][A|P]M)(,\s?([1-2]?[0-9][A|P]M-[1-2]?[0-9][A|P]M))*,?$/;
+const IMAGE_URL_REGEX = /^https?:\/\/.*[jpg|png|jpeg|JPG|PNG|JPEG]$/;
+const DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
 const formReducer = (state, action) => {
     switch (action.type) {
-        case 'FNAME_INPUT':
-            return {
-                ...state,
-                fname: {
-                    value: action.value,
-                    isValid: action.value.length >0,
-                    touched: true
-                },
-                isValid: state.email.isValid && state.password.isValid&& action.value.length>0 
-            }
-            case 'LNAME_INPUT':
-                return {
-                    ...state,
-                    lname: {
-                        value: action.value,
-                        isValid: action.value.length >0,
-                        touched: true
-                    },
-                    isValid: state.email.isValid && state.password.isValid&& state.fname.isValid&&  action.value.length>0 
-                }
-        case 'FNAME_BLUR':
-                return {
-                    ...state,
-                    fname: { ...state.fname, touched: true }
-                }
-        case 'LNAME_BLUR':
-                return {
-                    ...state,
-                    lname: { ...state.lname, touched: true }
-                }
-        case 'EMAIL_INPUT':
-            return {
-                ...state,
-                email: {
-                    value: action.value,
-                    isValid: action.value.match(EMAIL_REGEX) !== null,
-                    touched: true
-                },
-                isValid: action.value.match(EMAIL_REGEX) !== null && state.password.isValid
-            }
-        case 'EMAIL_BLUR':
-            return {
-                ...state,
-                email: { ...state.email, touched: true }
-            }
-        case 'PASSWORD_INPUT':
-            return {
-                ...state,
-                password: {
-                    value: action.value,
-                    isValid: action.value.length >= 6,
-                    touched: true
-                },
-                isValid: state.email.isValid && action.value.length >= 6
-            }
-        case 'PASSWORD_BLUR':
-            return {
-                ...state,
-                password: { ...state.password, touched: true }
-            }
         case 'ABOUTME_INPUT':
             return {
                 ...state,
                 aboutme: {
                     value: action.value,
-                    isValid: action.value.length >0,
+                    isValid: action.value.length > 0,
                     touched: true
                 },
-                isValid: state.email.isValid && state.password.isValid&& state.fname.isValid&& state.lname.isValid &&  action.value.length>0 
+                isValid: action.value.length > 0
+                    && state.subjects.isValid
+                    && state.monday.isValid
+                    && state.tuesday.isValid
+                    && state.wednesday.isValid
+                    && state.thursday.isValid
+                    && state.friday.isValid
+                    && state.saturday.isValid
+                    && state.sunday.isValid 
+                    && state.imgUrl.isValid
             }
         case 'ABOUTME_BLUR':
             return {
@@ -84,45 +38,220 @@ const formReducer = (state, action) => {
                 ...state,
                 subjects: {
                     value: action.value,
-                    isValid: action.value.length >0,
+                    isValid: SUBJECTS_REGEX.test(action.value.trim()),
                     touched: true
                 },
-                isValid: state.email.isValid && state.password.isValid&& state.fname.isValid&& state.lname.isValid &&state.aboutme.isValid &&  action.value.length>0 
+                isValid: state.aboutme.isValid
+                    && (SUBJECTS_REGEX.test(action.value.trim()) || action.value === '')
+                    && state.monday.isValid
+                    && state.tuesday.isValid
+                    && state.wednesday.isValid
+                    && state.thursday.isValid
+                    && state.friday.isValid
+                    && state.saturday.isValid
+                    && state.sunday.isValid 
+                    && state.imgUrl.isValid
             }
         case 'SUBJECTS_BLUR':
             return {
                 ...state,
-                subjects: { ...state.aboutme, touched: true }
+                subjects: { ...state.subjects, touched: true }
             }
-        case 'TIME_INPUT':
+
+        case 'MONDAY_INPUT':
             return {
                 ...state,
-                timeAva: {
+                monday: {
                     value: action.value,
-                    isValid: action.value.length >0,
+                    isValid: action.value === '' || AVAILABILITY_REGEX.test(action.value.trim()),
                     touched: true
                 },
-                isValid: state.email.isValid && state.password.isValid&& state.fname.isValid&& state.lname.isValid &&state.aboutme.isValid &&state.subjects.isValid &&  action.value.length>0 
+                isValid: state.aboutme.isValid
+                    && state.subjects.isValid
+                    && (AVAILABILITY_REGEX.test(action.value.trim()) || action.value === '')
+                    && state.tuesday.isValid
+                    && state.wednesday.isValid
+                    && state.thursday.isValid
+                    && state.friday.isValid
+                    && state.saturday.isValid
+                    && state.sunday.isValid 
+                    && state.imgUrl.isValid
             }
-        case 'TIME_BLUR':
+        case 'MONDAY_BLUR':
             return {
                 ...state,
-                timeAva: { ...state.aboutme, touched: true }
+                monday: { ...state.monday, touched: true }
             }
-        case 'IMG_INPUT':
+
+        case 'TUESDAY_INPUT':
             return {
                 ...state,
-                img: {
+                tuesday: {
                     value: action.value,
-                    isValid: action.value.length >0,
+                    isValid: action.value === '' || AVAILABILITY_REGEX.test(action.value.trim()),
                     touched: true
                 },
-                isValid: state.email.isValid && state.password.isValid&& state.fname.isValid&& state.lname.isValid &&state.aboutme.isValid &&state.subjects.isValid &&state.timeAva.isValid &&  action.value.length>0 
+                isValid: state.aboutme.isValid
+                    && state.subjects.isValid
+                    && state.monday.isValid
+                    && (AVAILABILITY_REGEX.test(action.value.trim()) || action.value === '')
+                    && state.wednesday.isValid
+                    && state.thursday.isValid
+                    && state.friday.isValid
+                    && state.saturday.isValid
+                    && state.sunday.isValid 
+                    && state.imgUrl.isValid
             }
-        case 'IMG_BLUR':
+        case 'TUESDAY_BLUR':
             return {
                 ...state,
-                img: { ...state.aboutme, touched: true }
+                tuesday: { ...state.tuesday, touched: true }
+            }
+
+        case 'WEDNESDAY_INPUT':
+            return {
+                ...state,
+                wednesday: {
+                    value: action.value,
+                    isValid: action.value === '' || AVAILABILITY_REGEX.test(action.value.trim()),
+                    touched: true
+                },
+                isValid: state.aboutme.isValid
+                    && state.subjects.isValid
+                    && state.monday.isValid
+                    && state.tuesday.isValid
+                    && (AVAILABILITY_REGEX.test(action.value.trim()) || action.value === '')
+                    && state.thursday.isValid
+                    && state.friday.isValid
+                    && state.saturday.isValid
+                    && state.sunday.isValid 
+                    && state.imgUrl.isValid
+            }
+        case 'WEDNESDAY_BLUR':
+            return {
+                ...state,
+                wednesday: { ...state.wednesday, touched: true }
+            }
+        case 'THURSDAY_INPUT':
+            return {
+                ...state,
+                thursday: {
+                    value: action.value,
+                    isValid: action.value === '' || AVAILABILITY_REGEX.test(action.value.trim()),
+                    touched: true
+                },
+                isValid: state.aboutme.isValid
+                    && state.subjects.isValid
+                    && state.monday.isValid
+                    && state.tuesday.isValid
+                    && state.wednesday.isValid
+                    && (AVAILABILITY_REGEX.test(action.value.trim()) || action.value === '')
+                    && state.friday.isValid
+                    && state.saturday.isValid
+                    && state.sunday.isValid 
+                    && state.imgUrl.isValid
+            }
+        case 'THURSDAY_BLUR':
+            return {
+                ...state,
+                thursday: { ...state.thursday, touched: true }
+            }
+        case 'FRIDAY_INPUT':
+            return {
+                ...state,
+                friday: {
+                    value: action.value,
+                    isValid: action.value === '' || AVAILABILITY_REGEX.test(action.value.trim()),
+                    touched: true
+                },
+                isValid: state.aboutme.isValid
+                    && state.subjects.isValid
+                    && state.monday.isValid
+                    && state.tuesday.isValid
+                    && state.wednesday.isValid
+                    && state.thursday.isValid
+                    && (AVAILABILITY_REGEX.test(action.value.trim()) || action.value === '')
+                    && state.saturday.isValid
+                    && state.sunday.isValid 
+                    && state.imgUrl.isValid
+            }
+        case 'FRIDAY_BLUR':
+            return {
+                ...state,
+                friday: { ...state.friday, touched: true }
+            }
+        case 'SATURDAY_INPUT':
+            return {
+                ...state,
+                saturday: {
+                    value: action.value,
+                    isValid: action.value === '' || AVAILABILITY_REGEX.test(action.value.trim()),
+                    touched: true
+                },
+                isValid: state.aboutme.isValid
+                    && state.subjects.isValid
+                    && state.monday.isValid
+                    && state.tuesday.isValid
+                    && state.wednesday.isValid
+                    && state.thursday.isValid
+                    && state.friday.isValid
+                    && (AVAILABILITY_REGEX.test(action.value.trim()) || action.value === '')
+                    && state.sunday.isValid
+                    && state.imgUrl.isValid
+            }
+        case 'SATURDAY_BLUR':
+            return {
+                ...state,
+                saturday: { ...state.saturday, touched: true }
+            }
+        case 'SUNDAY_INPUT':
+            return {
+                ...state,
+                sunday: {
+                    value: action.value,
+                    isValid: action.value === '' || AVAILABILITY_REGEX.test(action.value.trim()),
+                    touched: true
+                },
+                isValid: state.aboutme.isValid
+                    && state.subjects.isValid
+                    && state.monday.isValid
+                    && state.tuesday.isValid
+                    && state.wednesday.isValid
+                    && state.thursday.isValid
+                    && state.friday.isValid
+                    && state.saturday.isValid 
+                    && (AVAILABILITY_REGEX.test(action.value.trim()) || action.value === '')
+                    && state.imgUrl.isValid
+            }
+        case 'SUNDAY_BLUR':
+            return {
+                ...state,
+                sunday: { ...state.sunday, touched: true }
+            }
+        
+        case 'IMG_URL_INPUT':
+            return {
+                ...state,
+                imgUrl: {
+                    value: action.value,
+                    isValid: IMAGE_URL_REGEX.test(action.value.trim()),
+                    touched: true
+                },
+                isValid: state.aboutme.isValid
+                    && state.subjects.isValid
+                    && state.monday.isValid
+                    && state.tuesday.isValid
+                    && state.wednesday.isValid
+                    && state.thursday.isValid
+                    && state.friday.isValid
+                    && state.saturday.isValid 
+                    && state.sunday.isValid 
+                    && IMAGE_URL_REGEX.test(action.value.trim())
+            }
+        case 'IMG_URL_BLUR':
+            return {
+                ...state,
+                imgUrl: { ...state.imgUrl, touched: true }
             }
 
         default: return state;
@@ -131,33 +260,10 @@ const formReducer = (state, action) => {
 
 const TutorSignup = props => {
 
-    const [formState, dispatch] = useReducer(formReducer, {
-        fname: {
-            value: '',
-            isValid: false,
-            touched: false
-        },
-        lname: {
-            value: '',
-            isValid: false,
-            touched: false
-        },
+    const ctx = useContext(AuthContext);
+    const [error, setError] = useState(false);
 
-        email: {
-            value: '',
-            isValid: false,
-            touched: false
-        },
-        password: {
-            value: '',
-            isValid: false,
-            touched: false
-        },
-        isTutor: {
-            value: '',
-            isValid: false,
-            touched: false
-        },
+    const [formState, dispatch] = useReducer(formReducer, {
         aboutme: {
             value: '',
             isValid: false,
@@ -168,12 +274,42 @@ const TutorSignup = props => {
             isValid: false,
             touched: false
         },
-        timeAva: {
+        sunday: {
             value: '',
-            isValid: false,
+            isValid: true,
             touched: false
         },
-        img: {
+        monday: {
+            value: '',
+            isValid: true,
+            touched: false
+        },
+        tuesday: {
+            value: '',
+            isValid: true,
+            touched: false
+        },
+        wednesday: {
+            value: '',
+            isValid: true,
+            touched: false
+        },
+        thursday: {
+            value: '',
+            isValid: true,
+            touched: false
+        },
+        friday: {
+            value: '',
+            isValid: true,
+            touched: false
+        },
+        saturday: {
+            value: '',
+            isValid: true,
+            touched: false
+        },
+        imgUrl: {
             value: '',
             isValid: false,
             touched: false
@@ -181,109 +317,144 @@ const TutorSignup = props => {
         isValid: false
     });
 
+    const generateAvailabilityFields = () => {
+        let fields = [];
+        for (let day of DAYS) {
+            fields.push(
+                <div className="row mb-1" key={day.toLowerCase()}>
+                    <div className="col-md-2 d-flex align-items-center">
+                        <span>{day}</span>
+                    </div>
+                    <div className="col-md-10">
+                    <input type="text"
+                        id={`ava${day}`}
+                        className={`form-control ${!formState[day.toLowerCase()].isValid && formState[day.toLowerCase()].touched ? 'is-invalid' : ''}`}
+                        onChange={e => { dispatch({ type: `${day.toUpperCase()}_INPUT`, value: e.target.value }) }}
+                        onBlur={() => { dispatch({ type: `${day.toUpperCase()}_BLUR` }) }}
+                        ></input>
+                        {!formState[day.toLowerCase()].isValid && formState[day.toLowerCase()].touched && <small className="invalid-feedback form-text">Please use the format provided above.</small>}
+                    </div>
+                </div>
+            );
+        }
+        return fields;
+    }
+
+    const mapRange = (range) => {
+        let returnRange = [];
+        let startTime;
+        let endTime;
+        if (range === '') return null;
+
+        const startTimeRaw = range.split('-')[0];
+        if (startTimeRaw === '12AM') {
+            startTime = 0;
+        } else if (startTimeRaw === '12PM') {
+            startTime = 12;
+        } else {
+            startTime = startTimeRaw.length === 4 ? +startTimeRaw.substring(0, 2) : +startTimeRaw.substring(0, 1);
+            if (startTimeRaw.includes('PM')) startTime += 12;
+        }
+
+        const endTimeRaw = range.split('-')[1];
+        if (endTimeRaw === '12AM') {
+            endTime = 24;
+        } else if (endTimeRaw === '12PM') {
+            endTime = 12;
+        } else {
+            endTime = endTimeRaw.length === 4 ? +endTimeRaw.substring(0, 2) : +endTimeRaw.substring(0, 1);
+            if (endTimeRaw.includes('PM')) endTime += 12;
+        }
+
+        if (startTime < 0 || startTime > 23) return null;
+        if (endTime < 1 || endTime > 24) return null;
+        if (startTime === endTime) return null;
+        if (startTime > endTime) return null;
+
+        for (let i = startTime; i < endTime; i++) {
+            returnRange.push({
+                from: i,
+                to: i + 1
+            });
+        }
+
+        return returnRange;
+    };
+
     const onSubmit = e => {
         e.preventDefault();
-        alert('501 not implemented')
+
+        const reqBody = {
+            aboutMe: formState.aboutme.value,
+            skills: formState.subjects.value.split(',').map(s => s.trim()).filter(s => s !== ''),
+            availability: {
+                sunday: formState.sunday.value.split(',').map(range => mapRange(range)).filter(r => r !== null).flat(),
+                monday: formState.monday.value.split(',').map(range => mapRange(range)).filter(r => r !== null).flat(),
+                tuesday: formState.tuesday.value.split(',').map(range => mapRange(range)).filter(r => r !== null).flat(),
+                wednesday: formState.wednesday.value.split(',').map(range => mapRange(range)).filter(r => r !== null).flat(),
+                thursday: formState.thursday.value.split(',').map(range => mapRange(range)).filter(r => r !== null).flat(),
+                friday: formState.friday.value.split(',').map(range => mapRange(range)).filter(r => r !== null).flat(),
+                saturday: formState.saturday.value.split(',').map(range => mapRange(range)).filter(r => r !== null).flat()
+            },
+            profilePictureUrl: formState.imgUrl.value
+        }
+
+        axios.patch(`${process.env.REACT_APP_API_URL}/users`, reqBody, { headers: { Authorization: `Bearer ${ctx.token}` } })
+            .then(response => {
+                ctx.logout();
+            })
+            .catch(error => {
+                setError(true);
+            });
     }
 
     return (
-        <div className="col-md-4 offset-md-4">
+        <div className="col-md-6 offset-md-3 mb-3">
+            {error && <div className="alert alert-danger">An error occurred. Please try again.</div>}
             <div className="card">
                 <div className="card-body">
-                    <h5 className="card-title">Tutor signup</h5>
+                    <h5 className="card-title">{ctx.isTutor ? 'Edit your details' : 'Tutor signup'}</h5>
                     <form onSubmit={onSubmit}>
-                        <div className="form-group mb-3">
-                            <label className="form-label">First name</label>
-                            <input type="fname" 
-                                id="fname" 
-                                className={`form-control ${!formState.fname.isValid && formState.fname.touched ? 'is-invalid' : ''}`}
-                                onChange={e => { dispatch({ type: 'FNAME_INPUT', value: e.target.value }) }}
-                                onBlur={() => { dispatch({ type: 'FNAME_BLUR' }) }}
-                                ></input>
-                            {!formState.fname.isValid && formState.fname.touched && <small className="invalid-feedback form-text">First name is required.</small>}
-                        </div>
-
-                        <div className="form-group mb-3">
-                            <label className="form-label">Last name</label>
-                            <input type="lname" 
-                                id="lname"
-                                className={`form-control ${!formState.lname.isValid && formState.lname.touched ? 'is-invalid' : ''}`}
-                                onChange={e => { dispatch({ type: 'LNAME_INPUT', value: e.target.value }) }}
-                                onBlur={() => { dispatch({ type: 'LNAME_BLUR' }) }}
-                                ></input>
-                            {!formState.lname.isValid && formState.lname.touched && <small className="invalid-feedback form-text">Last name is required.</small>}
-                        </div>
-
-                        <div className="form-group mb-3">
-                            <label className="form-label">Email Address</label>
-                            <input type="email"
-                                id="email"
-                                className={`form-control ${!formState.email.isValid && formState.email.touched ? 'is-invalid' : ''}`}
-                                onChange={e => { dispatch({ type: 'EMAIL_INPUT', value: e.target.value }) }}
-                                onBlur={() => { dispatch({ type: 'EMAIL_BLUR' }) }}
-                                ></input>
-                            {!formState.email.isValid && formState.email.touched && <small className="invalid-feedback form-text">Email address is required.</small>}
-                        </div>
-                        <div className="form-group mb-3">
-                            <label className="form-label">Password</label>
-                            <input type="password"
-                                id="password"
-                                className={`form-control ${!formState.password.isValid && formState.password.touched ? 'is-invalid' : ''}`}
-                                onChange={e => { dispatch({ type: 'PASSWORD_INPUT', value: e.target.value }) }}
-                                onBlur={() => { dispatch({ type: 'PASSWORD_BLUR' }) }}
-                                ></input>
-                            {!formState.password.isValid && formState.password.touched && <small className="invalid-feedback form-text">Password must be at least 6 characters in length.</small>}
-                        </div>
-                        
                         <div className="form-group mb-3">
                             <label className="form-label">Please describe yourself</label>
                             <textarea type="aboutme"
                                 id="aboutme"
-                                rows="5"
-                                cols="50"
+                                rows="3"
                                 className={`form-control ${!formState.aboutme.isValid && formState.aboutme.touched ? 'is-invalid' : ''}`}
                                 onChange={e => { dispatch({ type: 'ABOUTME_INPUT', value: e.target.value }) }}
                                 onBlur={() => { dispatch({ type: 'ABOUTME_BLUR' }) }}
                                 ></textarea>
                             {!formState.aboutme.isValid && formState.aboutme.touched && <small className="invalid-feedback form-text">The about me section is required.</small>}
                         </div>
-                
                         <div className="form-group mb-3">
-                            <label className="form-label">Please list the subject/s you'd like to teach </label>
-                            <textarea type="subjects"
+                            <label className="form-label">Please list the subject(s) you'd like to teach, seperated by commas </label>
+                            <input type="text"
                                 id="subjects"
-                                rows="2"
-                                cols="50"
                                 className={`form-control ${!formState.subjects.isValid && formState.subjects.touched ? 'is-invalid' : ''}`}
                                 onChange={e => { dispatch({ type: 'SUBJECTS_INPUT', value: e.target.value }) }}
                                 onBlur={() => { dispatch({ type: 'SUBJECTS_BLUR' }) }}
-                                ></textarea>
-                            {!formState.subjects.isValid && formState.subjects.touched && <small className="invalid-feedback form-text">The subjects section is required.</small>}
-                        </div>
-                        <div className="form-group mb-3">
-                            <label className="form-label">Please enter your time availabilty </label>
-                            <input type="timeAva"
-                                id="timeAva"
-                                className={`form-control ${!formState.timeAva.isValid && formState.timeAva.touched ? 'is-invalid' : ''}`}
-                                onChange={e => { dispatch({ type: 'TIME_INPUT', value: e.target.value }) }}
-                                onBlur={() => { dispatch({ type: 'TIME_BLUR' }) }}
                                 ></input>
-                            {!formState.timeAva.isValid && formState.timeAva.touched && <small className="invalid-feedback form-text">The time availabilty section is required.</small>}
+                            <small className="form-text">Please use this format: SUBJ #### (e.g., "CS 2305, MATH 2414, BIOL 1350")</small>
+                            {!formState.subjects.isValid && formState.subjects.touched && <small className="invalid-feedback form-text">Please use the format provided above.</small>}
                         </div>
-
                         <div className="form-group mb-3">
-                            <label className="form-label">Please upload your profile picture </label>
-                            <input type="file"
+                            <label className="form-label">Please enter your time availabilty separated by commas (e.g., "11AM-1PM, 3PM-4PM")</label>
+                            {generateAvailabilityFields()}
+                            <small className="form-text">If you do not set any availability, you will not appear in the tutor list.</small>                      
+                        </div>
+                        <div className="form-group mb-3">
+                            <label className="form-label">Enter a url to your profile picture (must end in .png, .jpg, or .jpeg)</label>
+                            <input type="text"
                                 id="img"
-                                className={`form-control ${!formState.img.isValid && formState.img.touched ? 'is-invalid' : ''}`}
-                                onChange={e => { dispatch({ type: 'IMG_INPUT', value: e.target.value }) }}
-                                onBlur={() => { dispatch({ type: 'IMG_BLUR' }) }}
+                                className={`form-control ${!formState.imgUrl.isValid && formState.imgUrl.touched ? 'is-invalid' : ''}`}
+                                onChange={e => { dispatch({ type: 'IMG_URL_INPUT', value: e.target.value }) }}
+                                onBlur={() => { dispatch({ type: 'IMG_URL_BLUR' }) }}
                                 accept="image/*"
                                 ></input>
-                            {!formState.img.isValid && formState.img.touched && <small className="invalid-feedback form-text">The profile picture is required.</small>}
+                            {!formState.imgUrl.isValid && formState.imgUrl.touched && <small className="invalid-feedback form-text">The profile picture is required.</small>}
                         </div>
-                        
-                        <button disabled={!formState.isValid} type="submit" className="btn btn-success col-12">Sign up</button>
+                        <strong style={{color: 'red'}}>Note: Once you {ctx.isTutor ? 'apply changes' : 'sign up as a tutor'}, you will be logged out and must log in again.</strong>
+                        <button disabled={!formState.isValid} type="submit" className="btn btn-success col-12 mt-2">{ctx.isTutor ? 'Apply changes' : 'Sign up'}</button>
                     </form>
                 </div>
             </div>

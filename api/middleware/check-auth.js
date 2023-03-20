@@ -12,7 +12,7 @@ module.exports = (req, res, next) => {
     // TODO decide what will be included in the payload of the token
 
     req.userData = {
-      userId: payload.userId
+      userId: payload.id
     }
 
     next();

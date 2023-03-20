@@ -35,6 +35,7 @@ app.use('/api/favorites', require('./api/routes/favorites.routes'));
 app.use('/api', require('./api/routes/helloworld.routes'));
 app.use('/api/register', require('./api/routes/register.routes'));
 app.use('/api/login', require('./api/routes/login.routes'));
+app.use('/api/appointments', require('./api/routes/appointments.routes'));
 
 // serve the frontend application if no routes match
 app.use((req, res) => {

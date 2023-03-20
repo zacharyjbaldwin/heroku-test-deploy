@@ -16,7 +16,7 @@ const Profile = props => {
             <p>You are {ctx.isAdmin ? '' : 'not'} an admin. {ctx.isAdmin ? <Link to="/admin">(Admin Panel)</Link> : ''}</p>
             <p>You are {ctx.isTutor ? '' : 'not'} a tutor.</p>
             <p>Your token begins with <strong>{ctx.token.substring(0, 20)}</strong>...</p>
-            <Link to="/tutorsignup">Become a tutor</Link>
+            <Link to="/tutorsignup">{ctx.isTutor ? 'Edit your tutor profile' : 'Become a tutor'}</Link>
         </React.Fragment>
     );
 };
