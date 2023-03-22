@@ -1,0 +1,17 @@
+{
+  "files": {
+    "main.css": "/static/css/main.6a132188.css",
+    "main.js": "/static/js/main.71fc80ee.js",
+    "static/js/787.cda612ba.chunk.js": "/static/js/787.cda612ba.chunk.js",
+    "static/media/utd_background.jpg": "/static/media/utd_background.9e75a334794fda73b22a.jpg",
+    "static/media/logo-condensed.png": "/static/media/logo-condensed.058d92b8e6057a1a036e.png",
+    "index.html": "/index.html",
+    "main.6a132188.css.map": "/static/css/main.6a132188.css.map",
+    "main.71fc80ee.js.map": "/static/js/main.71fc80ee.js.map",
+    "787.cda612ba.chunk.js.map": "/static/js/787.cda612ba.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.6a132188.css",
+    "static/js/main.71fc80ee.js"
+  ]
+}
